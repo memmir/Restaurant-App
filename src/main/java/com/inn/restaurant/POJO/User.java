@@ -8,6 +8,8 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 
+@NamedQuery(name = "User.findByEmailId", query = "select u from User u where u.email=:email") //anotasyonu, JPA (Java Persistence API) kullanılarak tanımlanan bir sabit JPQL sorgusunu temsil eder ve sık kullanılan sorgular için tekrar yazma gereğini ortadan kaldırır.
+
 
 //@DynamicUpdate ve @DynamicInsert,
 // Hibernate'de kullanılan ve veri güncelleme ve ekleme işlemlerinde performansı artırmaya yönelik iki anotasyondur.
@@ -30,6 +32,9 @@ public class User implements Serializable {
 
     @Column(name = "contactNumber")
     private String contactNumber;
+
+    @Column(name = "email")
+    private String email;
 
     @Column(name = "password")
     private String password;
