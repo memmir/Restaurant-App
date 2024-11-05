@@ -24,21 +24,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<String> signUp(Map<String, String> RequestMap) {
         log.info("Inside signup {}", RequestMap);
-        if(validateSignUpMap(RequestMap)) {
-            User user = userDao.findByEmailId(RequestMap.get("email"));
+        try {
+            if (validateSignUpMap(RequestMap)) {
+                User user = userDao.findByEmailId(RequestMap.get("email"));
 
-            if(Objects.isNull(user)) { // User objesinin dolu olma durmunu kontrol ediyoruz. eğer boşsa if koşulu sağlanarak işleme devam ediliyor.
-                userDao.save(getUserFromMap(RequestMap)); // mapleme işlemini yaptığımız method u çağırdık.
-                return RestaurantUtils.getResponseEntity("Saved succesfully", HttpStatus.OK);
-            }else {
-                return RestaurantUtils.getResponseEntity("Email already exist", HttpStatus.BAD_REQUEST);
+                if (Objects.isNull(user)) { // User objesinin dolu olma durmunu kontrol ediyoruz. eğer boşsa if koşulu sağlanarak işleme devam ediliyor.
+                    userDao.save(getUserFromMap(RequestMap)); // mapleme işlemini yaptığımız method u çağırdık.
+                    return RestaurantUtils.getResponseEntity("Saved succesfully", HttpStatus.OK);
+                } else {
+                    return RestaurantUtils.getResponseEntity("Email already exist", HttpStatus.BAD_REQUEST);
+                }
+
+            } else {
+                return RestaurantUtils.getResponseEntity(RestaurantConstants.INVALID_DATA, HttpStatus.BAD_REQUEST);
             }
-
+        }catch (Exception e) {
+            e.printStackTrace();
         }
-        else{
-            return RestaurantUtils.getResponseEntity(RestaurantConstants.INVALID_DATA, HttpStatus.BAD_REQUEST);
-        }
-
+        return RestaurantUtils.getResponseEntity(RestaurantConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private boolean validateSignUpMap(Map<String, String> requestMap) { // zorunlu alanların frontend tarafından gelip gelmediğini kontrol eden method.
