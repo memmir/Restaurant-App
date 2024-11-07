@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Objects;
-
+//Bu sınıf, Spring Security'nin UserDetailsService arayüzünü uygulayarak kullanıcı kimlik doğrulama sürecinde kullanıcı detaylarını sağlamak için kullanılıyor.
+// CustomerUserDetailsService, loadUserByUsername metoduyla, Spring Security'nin kimlik doğrulama sırasında kullanıcı bilgilerini nasıl alacağını belirler.
 
 @Slf4j
 @Service
@@ -36,8 +37,13 @@ public class CustomerUserDetailsService implements UserDetailsService {
         }
     }
 
+    //Kimlik doğrulama sonrası kullanıcı detaylarına erişim sağlamak için yazılmıştır.
+    //userDetail nesnesini döndürür, ancak güvenlik nedeniyle parolayı null olarak ayarlar.
+    //Böylece, bu sınıftan alınan kullanıcı bilgisi parola bilgisi olmadan uygulamanın diğer bölümlerinde güvenle kullanılabilir.
     public User getUserDetail() {
-        return userDetail;
+        User user = userDetail;
+        user.setPassword(null);
+        return user;
     }
 
 }

@@ -13,8 +13,8 @@ import java.util.function.Function;
 
 @Service
 public class JwtUtil {
-
-    private String secret = "memmirGithub";
+    // HS256  algoritmasında 256 biti karşılaması gerektiği için secret ı  değiştirdik.
+    private String secret = "UzunVeGuvenliBirAnahtarOlmali256Bitmemmirgithubmemmirgithub";
 
     public String extractUsername(String token) {
         return extractClaims(token, Claims::getSubject);

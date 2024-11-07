@@ -1,5 +1,7 @@
 package com.inn.restaurant.serviceImpl;
 
+import com.inn.restaurant.JWT.CustomerUserDetailsService;
+import com.inn.restaurant.JWT.JwtUtil;
 import com.inn.restaurant.POJO.User;
 import com.inn.restaurant.constants.RestaurantConstants;
 import com.inn.restaurant.dao.UserDao;
@@ -9,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -20,6 +25,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    CustomerUserDetailsService customerUserDetailsService;
+
+    @Autowired
+    JwtUtil jwtUtil;
 
     @Override
     public ResponseEntity<String> signUp(Map<String, String> RequestMap) {
@@ -61,6 +75,32 @@ public class UserServiceImpl implements UserService {
         user.setStatus("false");
         user.setRole("user");
         return user;
+    }
+
+    //Authentication (AuthN): Bir kullanıcının söylediği kişi olup olmadığını doğrulamakla ilgilidir.
+    // Authorization (AuthZ): Yetki, ayrıcalık ve bir kullanıcının kimliğini doğruladıktan sonra hangi kaynaklara erişmesine izin verildiğini doğrulamakla ilgilidir.
+    @Override
+    public ResponseEntity<String> login(Map<String, String> RequestMap) {
+        log.info("Inside login");
+        try{
+            Authentication authentication = authenticationManager.authenticate( // Burda ön yüzden gelen bilgilerle authentication doğrulaması yapıyoruz.
+                    new UsernamePasswordAuthenticationToken(RequestMap.get("email"), RequestMap.get("password"))
+            );
+            if(authentication.isAuthenticated()){ //Bu bölüm, kullanıcının kimlik doğrulamasını yaptıktan sonra hesabının aktif olup olmadığını kontrol eder ve eğer aktifse, kullanıcıya bir JWT token döndürür. Bu token, kullanıcıya güvenli bir oturum sunar ve istemci tarafında kimlik doğrulama amacıyla kullanılabilir.
+                if(customerUserDetailsService.getUserDetail().getStatus().equalsIgnoreCase("true")){ //equalsIgnoreCase metodu iki metni, harf büyüklüğüne (case sensitivity) bakmaksızın karşılaştırır.
+                    return new ResponseEntity<String>("{\"token\":\""+
+                            jwtUtil.generateToken(customerUserDetailsService.getUserDetail().getEmail(),
+                                    customerUserDetailsService.getUserDetail().getRole()) + "\"}",
+                            HttpStatus.OK);
+                }
+                else{ // Bu satır ise gönderilen isteğin kimlik doğrulamasından geçemediği durumdaki yaşanacak senaryodur.
+                    return new ResponseEntity<String>("{\"message\":\""+"Wait for admin approval."+"\"}", HttpStatus.BAD_REQUEST);
+                }
+            }
+        }catch (Exception e) {
+            log.error("{}",e);
+        }
+        return new ResponseEntity<String>("{\"message\":\""+"Bad Credentials."+"\"}", HttpStatus.BAD_REQUEST);
     }
 
 }
