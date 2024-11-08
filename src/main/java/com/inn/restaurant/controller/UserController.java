@@ -18,4 +18,7 @@ public interface UserController {
 
     @GetMapping(path = "/get") //Burda dönüş değeri olarak yazdığımız userWrapper class ının bir diğer ismi DTO.
     public ResponseEntity<List<UserWrapper>> getAllUsers();
+
+    @PostMapping(path = "/update")
+    public ResponseEntity<String> updateUser(@RequestBody(required = true) Map<String, String> requestMap);
 }

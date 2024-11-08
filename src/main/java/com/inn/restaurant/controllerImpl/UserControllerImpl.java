@@ -51,4 +51,14 @@ public class UserControllerImpl implements UserController {
         return new ResponseEntity<List<UserWrapper>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<String> updateUser(Map<String, String> requestMap) {
+        try{
+            return userService.updateUser(requestMap);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return RestaurantUtils.getResponseEntity(RestaurantConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }
