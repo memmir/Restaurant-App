@@ -7,6 +7,7 @@ import com.inn.restaurant.POJO.User;
 import com.inn.restaurant.constants.RestaurantConstants;
 import com.inn.restaurant.dao.UserDao;
 import com.inn.restaurant.service.UserService;
+import com.inn.restaurant.utils.EmailUtils;
 import com.inn.restaurant.utils.RestaurantUtils;
 import com.inn.restaurant.wrapper.UserWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     JwtFilter jwtFilter;
+
+    @Autowired
+    EmailUtils emailUtils;
 
     @Override
     public ResponseEntity<String> signUp(Map<String, String> RequestMap) {
@@ -128,6 +132,7 @@ public class UserServiceImpl implements UserService {
                     Optional<User> optional = userDao.findById(Integer.parseInt(requestMap.get("id")));
                     if(!optional.isEmpty()){
                         userDao.updateStatus(requestMap.get("status"), Integer.parseInt(requestMap.get("id")));
+                        sendMailToAllAdmin(requestMap.get("status"), optional.get().getEmail(),userDao.getAllAdmin());
                         return RestaurantUtils.getResponseEntity("Updated Succesfully", HttpStatus.OK);
                     }else{
                         return RestaurantUtils.getResponseEntity("User id does not exist", HttpStatus.OK );
@@ -139,6 +144,17 @@ public class UserServiceImpl implements UserService {
                 e.printStackTrace();
             }
             return RestaurantUtils.getResponseEntity(RestaurantConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void sendMailToAllAdmin(String status, String user, List<String> allAdmin) {
+        allAdmin.remove(jwtFilter.getCurrentUser()); // listeden current user ı çıkarıyoruz çünkü aynı kişiye sürekli mail atmamak için.
+
+        if(status != null && status.equalsIgnoreCase("true")){
+            emailUtils.sendSimpleMessage(jwtFilter.getCurrentUser(), "ACcount Approved", "USER:- "+ user + " /n is approved ny /nADMIN:-" +jwtFilter.getCurrentUser() , allAdmin);
+        }else{
+            emailUtils.sendSimpleMessage(jwtFilter.getCurrentUser(), "ACcount Disabled", "USER:- "+ user + " /n is Disabled ny /nADMIN:-" +jwtFilter.getCurrentUser() , allAdmin);
+        }
+
     }
 
 }

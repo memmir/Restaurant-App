@@ -14,6 +14,9 @@ import java.io.Serializable;
 
 @NamedQuery(name= "User.updateStatus", query = "update User u set u.status=:status where u.id=:id")
 
+@NamedQuery(name = "User.getAllAdmin", query = "select u.email from User u where u.role='admin'")
+
+
 //@DynamicUpdate ve @DynamicInsert,
 // Hibernate'de kullanılan ve veri güncelleme ve ekleme işlemlerinde performansı artırmaya yönelik iki anotasyondur.
 @Data
