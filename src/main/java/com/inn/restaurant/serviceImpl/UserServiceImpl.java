@@ -1,12 +1,14 @@
 package com.inn.restaurant.serviceImpl;
 
 import com.inn.restaurant.JWT.CustomerUserDetailsService;
+import com.inn.restaurant.JWT.JwtFilter;
 import com.inn.restaurant.JWT.JwtUtil;
 import com.inn.restaurant.POJO.User;
 import com.inn.restaurant.constants.RestaurantConstants;
 import com.inn.restaurant.dao.UserDao;
 import com.inn.restaurant.service.UserService;
 import com.inn.restaurant.utils.RestaurantUtils;
+import com.inn.restaurant.wrapper.UserWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,6 +38,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     JwtUtil jwtUtil;
+
+    @Autowired
+    JwtFilter jwtFilter;
 
     @Override
     public ResponseEntity<String> signUp(Map<String, String> RequestMap) {
@@ -101,6 +108,20 @@ public class UserServiceImpl implements UserService {
             log.error("{}",e);
         }
         return new ResponseEntity<String>("{\"message\":\""+"Bad Credentials."+"\"}", HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    public ResponseEntity<List<UserWrapper>> getAllUsers() {
+        try{
+            if(jwtFilter.isAdmin()){ // Kaydın role ü admin mi değil mi kontrolü yapıyoruz.
+                return new ResponseEntity<>(userDao.getAllUsers(), HttpStatus.OK);
+            }else{ // Role ü admin değilse yetkili değilsin hatası patlatıyoruz.
+                return new ResponseEntity<>(new ArrayList<>(), HttpStatus.UNAUTHORIZED);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
