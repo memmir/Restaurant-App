@@ -22,4 +22,6 @@ public interface UserDao extends JpaRepository<User, Integer> {
     @Transactional
     @Modifying // bu iki anotasyonu kullanarak bu metodu kullandığımızda try catch kullanabileceğiz aksi halde kullanamıyoruz.
     Integer updateStatus(@Param("status") String status, @Param("id")Integer id);
+
+    User findByEmail(String email);
 }

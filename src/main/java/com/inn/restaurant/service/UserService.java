@@ -1,6 +1,7 @@
 package com.inn.restaurant.service;
 
 import com.inn.restaurant.wrapper.UserWrapper;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface UserService {
     ResponseEntity<String> updateUser(Map<String, String> requestMap);
 
     ResponseEntity<String> checkToken();
+
+    ResponseEntity<String> changePassword(Map<String, String> requestMap);
 }
