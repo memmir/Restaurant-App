@@ -16,4 +16,5 @@ public interface UserService {
 
     ResponseEntity<String> updateUser(Map<String, String> requestMap);
 
+    ResponseEntity<String> checkToken();
 }

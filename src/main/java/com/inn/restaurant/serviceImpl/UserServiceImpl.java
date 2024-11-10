@@ -157,4 +157,9 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public ResponseEntity<String> checkToken() {
+        return RestaurantUtils.getResponseEntity("true", HttpStatus.OK);
+    }
+
 }
