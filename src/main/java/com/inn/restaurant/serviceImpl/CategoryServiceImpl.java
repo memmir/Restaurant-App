@@ -1,21 +1,24 @@
 package com.inn.restaurant.serviceImpl;
 
+import com.google.common.base.Strings;
 import com.inn.restaurant.JWT.JwtFilter;
 import com.inn.restaurant.POJO.Category;
 import com.inn.restaurant.constants.RestaurantConstants;
 import com.inn.restaurant.dao.CategoryDao;
 import com.inn.restaurant.service.CategoryService;
 import com.inn.restaurant.utils.RestaurantUtils;
-import com.inn.restaurant.wrapper.CategoryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
@@ -25,8 +28,17 @@ public class CategoryServiceImpl implements CategoryService {
     JwtFilter jwtFilter;
 
     @Override
-    public ResponseEntity<List<CategoryWrapper>> getAllCategory() {
-        return null;
+    public ResponseEntity<List<Category>> getAllCategory(String filterValue) {
+        try{
+            if(!Strings.isNullOrEmpty(filterValue) && filterValue.equalsIgnoreCase("true")){
+                log.info("Inside if");
+                return new ResponseEntity<List<Category>>(categoryDao.getAllCategory(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(categoryDao.findAll(), HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<Category>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR); // Burada diğerlerinden farklı olarak yapılma nedeni RestaurantUtils classında dönüş değeri olarak String tanımlanmış. Bu metodda ise Liste dönüş değeri var.
     }
 
     @Override
@@ -40,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
                 }
             }
             else{
-                RestaurantUtils.getResponseEntity(RestaurantConstants.UNAUTHORIZED_ACCESS,HttpStatus.UNAUTHORIZED);
+                return RestaurantUtils.getResponseEntity(RestaurantConstants.UNAUTHORIZED_ACCESS,HttpStatus.UNAUTHORIZED);
             }
 
         }catch (Exception e){
