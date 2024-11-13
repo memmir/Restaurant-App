@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -52,6 +53,36 @@ public class ProductServiceImpl implements ProductService {
             e.printStackTrace();
         }
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> updateProduct(Map<String, String> requestMap) {
+        try{
+            if(jwtFilter.isAdmin()){
+                if(validateProductMap(requestMap, false)){
+                    Optional<Product> optional = productDao.findById(Integer.parseInt(requestMap.get("id")));
+                    if(!optional.isEmpty()){
+                        Product product = getProductFromMap(requestMap,true);
+                        product.setStatus(optional.get().getStatus());
+                        productDao.save(product);
+                        RestaurantUtils.getResponseEntity("Product updated succesfully", HttpStatus.OK);
+                    }
+                    else {
+                        RestaurantUtils.getResponseEntity("Product id nor exist", HttpStatus.OK);
+                    }
+                }else{
+                    return RestaurantUtils.getResponseEntity(RestaurantConstants.INVALID_DATA, HttpStatus.BAD_REQUEST);
+
+                }
+            }else {
+                return RestaurantUtils.getResponseEntity(RestaurantConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return RestaurantUtils.getResponseEntity(RestaurantConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
 
