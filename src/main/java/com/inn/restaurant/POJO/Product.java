@@ -7,25 +7,35 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 
-// GÜNCELLEME: Product tablosu ile category tablosunu birbirine joinledikten sonra sql sorgusunu değiştirdik.
-@NamedQuery(name= "Category.getAllCategory",query = "select c from Category c where c.id in (select p.category from Product p where p.status='true')")
-
-//@DynamicUpdate ve @DynamicInsert,
-// Hibernate'de kullanılan ve veri güncelleme ve ekleme işlemlerinde performansı artırmaya yönelik iki anotasyondur.
 @Data
 @Entity
 @DynamicUpdate //Sadece güncellenmiş alanları içeren SQL UPDATE sorgularını oluşturur.
 @DynamicInsert //Yeni bir entity eklenirken yalnızca dolu alanları içeren SQL INSERT sorgularını oluşturur.
-@Table(name = "category")
-public class Category implements Serializable {
+@Table(name = "product")
+public class Product implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final Long serialVersionUID = 123456L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name="id")
     private Integer id;
 
     @Column(name = "name")
     private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_fk", nullable = false)
+    private Category category;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name="price")
+    private Integer price;
+
+    @Column(name = "status")
+    private String status;
+
+
 }
