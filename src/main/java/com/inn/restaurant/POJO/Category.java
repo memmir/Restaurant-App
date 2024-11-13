@@ -8,7 +8,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.io.Serializable;
 
 // GÜNCELLEME: Product tablosu ile category tablosunu birbirine joinledikten sonra sql sorgusunu değiştirdik.
-@NamedQuery(name= "Category.getAllCategory",query = "select c from Category c where c.id in (select p.category from Product p where p.status='true')")
+@NamedQuery(name= "Category.getAllCategory",query = "select c from Category c where c.id in (select p.category.id from Product p where p.status='true')")
 
 //@DynamicUpdate ve @DynamicInsert,
 // Hibernate'de kullanılan ve veri güncelleme ve ekleme işlemlerinde performansı artırmaya yönelik iki anotasyondur.

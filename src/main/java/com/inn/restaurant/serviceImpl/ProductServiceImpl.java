@@ -7,11 +7,14 @@ import com.inn.restaurant.constants.RestaurantConstants;
 import com.inn.restaurant.dao.ProductDao;
 import com.inn.restaurant.service.ProductService;
 import com.inn.restaurant.utils.RestaurantUtils;
+import com.inn.restaurant.wrapper.ProductWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -41,6 +44,15 @@ public class ProductServiceImpl implements ProductService {
         return RestaurantUtils.getResponseEntity(RestaurantConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<List<ProductWrapper>> getAllProduct() {
+        try{
+            return new ResponseEntity<>(productDao.getAllProduct(), HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
 
     private boolean validateProductMap(Map<String, String> requestMap, boolean validateId) {

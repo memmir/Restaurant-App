@@ -18,5 +18,4 @@ public class UserWrapper {
     private String contactNumber;
 
     private String status;
-
 }
