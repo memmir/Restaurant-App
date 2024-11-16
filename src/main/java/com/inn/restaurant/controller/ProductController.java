@@ -14,7 +14,7 @@ public interface ProductController {
     @PostMapping(path = "/add")
     ResponseEntity<String> addNewProduct(@RequestBody Map<String, String> requestMap);
 
-    @GetMapping(path = "name")
+    @GetMapping(path = "/name")  // BUG FIX
     ResponseEntity<List<ProductWrapper>> getAllProduct();
 
     @PostMapping(path = "/update")
@@ -25,4 +25,8 @@ public interface ProductController {
 
     @PostMapping(path = "/updateStatus")
     ResponseEntity<String> updateStatus(@RequestBody Map<String, String> requestMap);
+
+    @GetMapping(path = "/getByCategory/{id}")
+    ResponseEntity<List<ProductWrapper>> getByCategory(@PathVariable Integer id);
+
 }

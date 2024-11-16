@@ -125,6 +125,16 @@ public class ProductServiceImpl implements ProductService {
         return RestaurantUtils.getResponseEntity(RestaurantConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<List<ProductWrapper>> getByCategory(Integer id) {
+        try{
+            return new ResponseEntity<>(productDao.getProductByCategory(id), HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
     private boolean validateProductMap(Map<String, String> requestMap, boolean validateId) {
         if(requestMap.containsKey("name")){

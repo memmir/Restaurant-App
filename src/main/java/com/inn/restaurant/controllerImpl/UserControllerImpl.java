@@ -74,7 +74,7 @@ public class UserControllerImpl implements UserController {
     @Override
     public ResponseEntity<String> changePassword(Map<String, String> requestMap) {
         try{
-            userService.changePassword(requestMap);
+            return userService.changePassword(requestMap); //BUG FIXX
         }catch(Exception e){
             e.printStackTrace();
         }
